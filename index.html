@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#214d38">
+<title>24 kleine Weihnachtsfreuden – Adventskalender 2026</title>
+<style>
+:root{--green:#214d38;--green2:#163827;--red:#9f2f36;--gold:#c6a24a;--cream:#fbf7ef;--paper:#fffdf8;--ink:#292a25}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+.hero{background:linear-gradient(135deg,var(--green2),var(--green));color:#fff;text-align:center;padding:42px 18px 36px;border-bottom:5px solid var(--gold);position:relative;overflow:hidden}
+.hero:before,.hero:after{content:"✦";position:absolute;color:#d8bd73;opacity:.5;font-size:44px;top:18px}.hero:before{left:8%}.hero:after{right:8%}
+.kicker{letter-spacing:.16em;text-transform:uppercase;font-size:.75rem;color:#e5cf8d}
+h1{font-family:Georgia,serif;font-weight:normal;font-size:clamp(2rem,7vw,3.5rem);line-height:1.1;margin:10px auto 12px;max-width:800px}
+.hero p{max-width:620px;margin:0 auto;color:#f5f1e7}
+main{max-width:1000px;margin:0 auto;padding:26px 16px 42px}
+.notice{background:#fffdf8;border:1px solid #e5d6ad;border-left:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:22px}
+.status{text-align:center;color:var(--green);font-weight:650;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.door{min-height:138px;border:1px solid #d9c99c;border-radius:14px;background:linear-gradient(145deg,#fffdf8,#f3ead8);padding:14px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 3px 8px #1638270c;transition:transform .15s,box-shadow .15s}
+.door.open{cursor:pointer;border:2px solid var(--gold);background:linear-gradient(145deg,#fffdf8,#f7ead0)}
+.door.open:hover{transform:translateY(-2px);box-shadow:0 7px 15px #1638271c}
+.door.locked{opacity:.72;color:#777}
+.number{font-family:Georgia,serif;font-size:2rem;line-height:1;color:var(--red)}
+.door.open .number{color:var(--green)}
+.door-title{font-size:.86rem;font-weight:650;line-height:1.25}
+.door-meta{font-size:.72rem;color:#68645a}
+.symbol{font-size:1rem;color:var(--gold)}
+footer{text-align:center;background:var(--green2);color:#f5f1e7;padding:22px 16px;font-size:.85rem}
+footer span{color:#e5cf8d}
+.modal{display:none;position:fixed;inset:0;background:#102017b8;z-index:10;padding:20px;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.dialog{width:min(100%,440px);background:var(--paper);border-radius:18px;padding:24px;border-top:5px solid var(--gold);text-align:center;box-shadow:0 18px 55px #0004}
+.dialog h2{font-family:Georgia,serif;color:var(--green);font-weight:normal;font-size:1.7rem;margin:8px 0}
+.dialog p{color:#514e46}
+.btn{display:inline-block;background:var(--red);color:white;text-decoration:none;border-radius:9px;padding:12px 18px;font-weight:700;margin:7px 0}
+.close{border:0;background:transparent;color:#57534b;text-decoration:underline;padding:10px;cursor:pointer;font:inherit}
+.small{font-size:.8rem;color:#6c675c}
+@media(max-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.door{min-height:124px;padding:10px 5px}.door-title{font-size:.78rem}.number{font-size:1.8rem}.hero{padding:34px 16px 28px}}
+@media(max-width:380px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.door{min-height:118px}}
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="kicker">Ein Adventsgruß fürs Kollegium</div>
+<h1>24 kleine<br>Weihnachtsfreuden</h1>
+<p>Jeden Tag eine kleine Idee zum Basteln, Backen oder Verschenken.<br>Schön, dass wir gemeinsam durch den Advent gehen.</p>
+</header>
+<main>
+<div class="notice"><strong>So funktioniert's:</strong> Ab dem jeweiligen Dezembertag öffnet sich ein neues Türchen automatisch. Tippe auf ein geöffnetes Türchen, um die Anleitung als PDF herunterzuladen. Bereits geöffnete Türchen bleiben verfügbar.</div>
+<p class="status" id="status" aria-live="polite">Der Kalender wird geladen …</p>
+<section class="grid" id="grid" aria-label="Adventskalender mit 24 Türchen"></section>
+</main>
+<footer><span>✦</span> Mit herzlichen Weihnachtsgrüßen für ein gutes Miteinander <span>✦</span><br><small>Advent 2026 · Tannengrün, Rot & Gold</small></footer>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<div class="dialog">
+<div class="symbol">✦ ✧ ✦</div>
+<div class="kicker" style="color:var(--red)">Türchen <span id="modalDay"></span></div>
+<h2 id="modalTitle"></h2>
+<p id="modalInfo"></p>
+<a class="btn" id="download" href="#" download>PDF herunterladen</a><br>
+<button class="close" id="close">Zurück zum Kalender</button>
+<p class="small">Viel Freude beim Ausprobieren!</p>
+</div>
+</div>
+<script>
+const items = [{"day": 1, "title": "Gebrannte Mandeln aus der Pfanne", "kind": "Rezept", "duration": "ca. 15 Minuten", "file": "pdf/01_gebrannte_mandeln_aus_der_pfanne.pdf"}, {"day": 2, "title": "Papiersterne falten", "kind": "Bastelidee", "duration": "ca. 15–20 Minuten", "file": "pdf/02_papiersterne_falten.pdf"}, {"day": 3, "title": "Schokocrossies ohne Backen", "kind": "Rezept", "duration": "ca. 20 Minuten plus Kühlzeit", "file": "pdf/03_schokocrossies_ohne_backen.pdf"}, {"day": 4, "title": "Geschenkanhänger aus Karton", "kind": "Bastelidee", "duration": "ca. 20 Minuten", "file": "pdf/04_geschenkanh_nger_aus_karton.pdf"}, {"day": 5, "title": "Winterlicher Apfelpunsch", "kind": "Rezept", "duration": "ca. 10 Minuten", "file": "pdf/05_winterlicher_apfelpunsch.pdf"}, {"day": 6, "title": "Duftendes Badesalz zum Verschenken", "kind": "Bastelidee", "duration": "ca. 10 Minuten", "file": "pdf/06_duftendes_badesalz_zum_verschenken.pdf"}, {"day": 7, "title": "Einfache Origami-Sterne", "kind": "Bastelidee", "duration": "ca. 15 Minuten", "file": "pdf/07_einfache_origami_sterne.pdf"}, {"day": 8, "title": "Trinkschokolade am Stiel", "kind": "Rezept", "duration": "ca. 20 Minuten plus Kühlzeit", "file": "pdf/08_trinkschokolade_am_stiel.pdf"}, {"day": 9, "title": "Mini-Geschenktüten falten", "kind": "Bastelidee", "duration": "ca. 15 Minuten", "file": "pdf/09_mini_geschenkt_ten_falten.pdf"}, {"day": 10, "title": "Schnelle Weihnachtsplätzchen", "kind": "Rezept", "duration": "ca. 30 Minuten plus Backzeit", "file": "pdf/10_schnelle_weihnachtspl_tzchen.pdf"}, {"day": 11, "title": "Tee-Geschenk im Glas", "kind": "Bastelidee", "duration": "ca. 10 Minuten", "file": "pdf/11_tee_geschenk_im_glas.pdf"}, {"day": 12, "title": "Orangen-Zimt-Duftdeko", "kind": "Bastelidee", "duration": "ca. 10 Minuten plus Trocknungszeit", "file": "pdf/12_orangen_zimt_duftdeko.pdf"}, {"day": 13, "title": "Weihnachtskarten mit Handlettering", "kind": "Bastelidee", "duration": "ca. 15 Minuten", "file": "pdf/13_weihnachtskarten_mit_handlettering.pdf"}, {"day": 14, "title": "Weihnachtlicher Gewürzzucker", "kind": "Rezept", "duration": "ca. 5 Minuten", "file": "pdf/14_weihnachtlicher_gew_rzzucker.pdf"}, {"day": 15, "title": "Windlicht aus einem Schraubglas", "kind": "Bastelidee", "duration": "ca. 15 Minuten", "file": "pdf/15_windlicht_aus_einem_schraubglas.pdf"}, {"day": 16, "title": "Einfache Zimtschnecken aus Blätterteig", "kind": "Rezept", "duration": "ca. 25 Minuten", "file": "pdf/16_einfache_zimtschnecken_aus_bl_tterteig.pdf"}, {"day": 17, "title": "Kleine Weihnachtsbäume aus Papier", "kind": "Bastelidee", "duration": "ca. 15 Minuten", "file": "pdf/17_kleine_weihnachtsb_ume_aus_papier.pdf"}, {"day": 18, "title": "Knuspermüsli mit Zimt", "kind": "Rezept", "duration": "ca. 25 Minuten", "file": "pdf/18_knusperm_sli_mit_zimt.pdf"}, {"day": 19, "title": "Salzteig-Anhänger", "kind": "Bastelidee", "duration": "ca. 20 Minuten plus Trocknung", "file": "pdf/19_salzteig_anh_nger.pdf"}, {"day": 20, "title": "Winterliche Kräutermischung", "kind": "Rezept / Geschenkidee", "duration": "ca. 10 Minuten", "file": "pdf/20_winterliche_kr_utermischung.pdf"}, {"day": 21, "title": "Glückskekse mit Weihnachtsbotschaften", "kind": "Rezept", "duration": "ca. 30 Minuten", "file": "pdf/21_gl_ckskekse_mit_weihnachtsbotschaften.pdf"}, {"day": 22, "title": "Papierhäuser als Tischdeko", "kind": "Bastelidee", "duration": "ca. 20 Minuten", "file": "pdf/22_papierh_user_als_tischdeko.pdf"}, {"day": 23, "title": "Last-Minute-Geschenkanhänger mit Naturmotiven", "kind": "Bastelidee", "duration": "ca. 10 Minuten", "file": "pdf/23_last_minute_geschenkanh_nger_mit_naturmo.pdf"}, {"day": 24, "title": "Festliche Trinkschokolade und Weihnachtsgruß", "kind": "Rezept & Abschluss", "duration": "ca. 10 Minuten", "file": "pdf/24_festliche_trinkschokolade_und_weihnachts.pdf"}];
+const grid = document.getElementById('grid');
+const status = document.getElementById('status');
+const modal = document.getElementById('modal');
+const pad = n => String(n).padStart(2,'0');
+function localDateParts(){
+  // Uses the visitor's local calendar date. For Germany, users should have their device set to German local time.
+  const now = new Date();
+  return {year:now.getFullYear(), month:now.getMonth()+1, day:now.getDate()};
+}
+function isUnlocked(day, now){
+  if(now.year > 2026) return true;
+  if(now.year < 2026) return false;
+  if(now.month > 12) return true;
+  if(now.month < 12) return false;
+  return now.day >= day;
+}
+function render(){
+  const now = localDateParts();
+  grid.innerHTML = '';
+  let opened = 0;
+  items.forEach(item=>{
+    const open = isUnlocked(item.day, now);
+    if(open) opened++;
+    const b = document.createElement('button');
+    b.type='button';
+    b.className='door '+(open?'open':'locked');
+    b.setAttribute('aria-label', open ? `Türchen ${item.day}: ${item.title}, öffnen` : `Türchen ${item.day}, noch verschlossen`);
+    b.innerHTML = `<span class="number">${pad(item.day)}</span><span class="symbol">${open?'✦':'✧'}</span><span class="door-title">${open?item.title:'Eine kleine Überraschung'}</span><span class="door-meta">${open?item.kind:'Ab '+item.day+'. Dezember'}</span>`;
+    if(open) b.addEventListener('click',()=>showItem(item));
+    else b.disabled=true;
+    grid.appendChild(b);
+  });
+  if(now.year<2026 || (now.year===2026 && now.month<12)){
+    status.textContent='Bald geht es los – das erste Türchen öffnet sich am 1. Dezember 2026.';
+  }else if(now.year===2026 && now.month===12){
+    status.textContent=`${opened} von 24 Türchen sind geöffnet. Schau morgen wieder vorbei!`;
+  }else{
+    status.textContent='Alle 24 Türchen sind geöffnet. Viel Freude beim Nachlesen!';
+  }
+}
+function showItem(item){
+  document.getElementById('modalDay').textContent=pad(item.day);
+  document.getElementById('modalTitle').textContent=item.title;
+  document.getElementById('modalInfo').textContent=`${item.kind} · ${item.duration}`;
+  document.getElementById('download').href=item.file;
+  modal.classList.add('show');
+  document.getElementById('close').focus();
+}
+function closeModal(){modal.classList.remove('show')}
+document.getElementById('close').addEventListener('click',closeModal);
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+render();
+</script>
+</body>
+</html>
